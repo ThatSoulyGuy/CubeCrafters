@@ -82,9 +82,6 @@ namespace World
                 loadedChunks.RemoveChunk(chunkCoordinate);
             }
         }
-
-//        if (glGetError())
-//            std::cout << std::to_string(glGetError()) << "\n"; // std::endl();
     }
 
     void StartUpdating()
