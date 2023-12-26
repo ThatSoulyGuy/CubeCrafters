@@ -54,79 +54,64 @@ public:
 		glUseProgram(shaderProgram);
 	}
 
-	template<typename T>
-	void SetUniform(const std::string& name, const T& value) const
-	{
-		Logger_ThrowError("Overload", "Invalid type: '" + std::string(typeid(T).name()) + "' passed to function", false);
-	};
-
-	template<>
-	void SetUniform<bool>(const std::string& name, const bool& value) const
+	void SetUniform(const std::string& name, const bool& value) const
 	{
 		glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), (int)value);
 	}
 
-	template<>
-	void SetUniform<int>(const std::string& name, const int& value) const
+	void SetUniform(const std::string& name, const int& value) const
 	{
 		glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value);
 	}
 
-	template<>
-	void SetUniform<float>(const std::string& name, const float& value) const
+	void SetUniform(const std::string& name, const float& value) const
 	{
 		glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
 	}
 
-	template<>
-	void SetUniform<glm::vec2>(const std::string& name, const glm::vec2& value) const
+	void SetUniform(const std::string& name, const glm::vec2& value) const
 	{
 		glUniform2fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, &value[0]);
 	}
 
-	template<>
-	void SetUniform<glm::vec3>(const std::string& name, const glm::vec3& value) const
+	void SetUniform(const std::string& name, const glm::vec3& value) const
 	{
 		glUniform3fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, &value[0]);
 	}
 
-	template<>
-	void SetUniform<glm::vec4>(const std::string& name, const glm::vec4& value) const
+	void SetUniform(const std::string& name, const glm::vec4& value) const
 	{
 		glUniform4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, &value[0]);
 	}
 
-	template<>
-	void SetUniform<glm::mat2>(const std::string& name, const glm::mat2& mat) const
+	void SetUniform(const std::string& name, const glm::mat2& mat) const
 	{
 		glUniformMatrix2fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 	}
 
-	template<>
-	void SetUniform<glm::mat3>(const std::string& name, const glm::mat3& mat) const
+	void SetUniform(const std::string& name, const glm::mat3& mat) const
 	{
 		glUniformMatrix3fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 	}
 
-	template<>
-	void SetUniform<glm::mat4>(const std::string& name, const glm::mat4& mat) const
+	void SetUniform(const std::string& name, const glm::mat4& mat) const
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 	}
 
 	void SetUniform(const std::string& name, float x, float y) const
 	{
-		SetUniform<glm::vec2>(name, glm::vec2(x, y));
+		SetUniform(name, glm::vec2(x, y));
 	}
 
 	void SetUniform(const std::string& name, float x, float y, float z) const
 	{
-		SetUniform<glm::vec3>(name, glm::vec3(x, y, z));
+		SetUniform(name, glm::vec3(x, y, z));
 	}
 
 	void SetUniform(const std::string& name, float x, float y, float z, float w) const
 	{
-		SetUniform<glm::vec4>(name, glm::vec4(x, y, z, w));
+		SetUniform(name, glm::vec4(x, y, z, w));
 	}
 
 	void CleanUp()

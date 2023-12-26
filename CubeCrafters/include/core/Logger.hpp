@@ -1,7 +1,9 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
+#if defined(_WIN64) || defined(_WIN32)
 #include <Windows.h>
+#endif
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -39,7 +41,7 @@ std::string loggerCurrentMessage;
 std::string loggerSaveFilename;
 std::ofstream loggerSaveFile;
 std::thread::id loggerThreadID;
-long long loggerTimeNow;
+time_t loggerTimeNow;
 struct tm loggerLocalTime;
 ThreadTaskExecutor loggerExecutor;
 
@@ -156,9 +158,10 @@ void __LoggerThrowError(const std::string& unexpected, const std::string& messag
 		{
 			exit(-1);
 		});
-		
+
+#if defined(_WIN64) || defined(_WIN32)
 		MessageBoxA(NULL, std::format("Unexpected: '{}' at: '{}::{}', {}", unexpected.c_str(), name.c_str(), line, message.c_str()).c_str(), "Fatal Error!", MB_ICONERROR);
-		
+#endif
 		exit(-1);
 	}
 }
