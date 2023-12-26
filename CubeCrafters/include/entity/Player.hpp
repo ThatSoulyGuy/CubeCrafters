@@ -42,8 +42,32 @@ private:
 		{
 			glm::ivec3 blockPosition = Raycast::Shoot(camera.transform.position, camera.transform.rotation, 5.0f);
 
-			if (blockPosition != glm::ivec3{-1, -1, -1})
+			if (blockPosition != glm::ivec3{ -1, -1, -1 })
 				World::SetBlock(blockPosition, BlockType::BLOCK_AIR);
+		}
+
+		if (Input::GetMouseButton(1, GLFW_PRESS))
+		{
+			glm::ivec3 blockPosition = Raycast::Shoot(camera.transform.position, camera.transform.rotation, 5.0f);
+
+			if (blockPosition != glm::ivec3{ -1, -1, -1 })
+			{
+				BlockFace hitFace = Raycast::GetHitFace(blockPosition, camera.transform.position, camera.transform.rotation);
+
+				glm::ivec3 newBlockPosition = blockPosition;
+
+				switch (hitFace)
+				{
+					case BlockFace::TOP:    newBlockPosition.y += 1; break;
+					case BlockFace::BOTTOM: newBlockPosition.y -= 1; break;
+					case BlockFace::NORTH:  newBlockPosition.z -= 1; break;
+					case BlockFace::SOUTH:  newBlockPosition.z += 1; break;
+					case BlockFace::EAST:   newBlockPosition.x += 1; break;
+					case BlockFace::WEST:   newBlockPosition.x -= 1; break;
+				}
+
+				World::SetBlock(newBlockPosition, BlockType::BLOCK_GRASS);
+			}
 		}
 	}
 

@@ -15,7 +15,7 @@ int main()
 	TextureManager::RegisterTexture(Texture::Register("textures/block.png", "block"));
 	TextureManager::RegisterTexture(Texture::Register("textures/terrain.png", "atlas"));
 
-	Window::GenerateWindow("CubeCrafters* 0.1.6", { 750, 450 });
+	Window::GenerateWindow("CubeCrafters* 0.1.7", { 750, 450 });
 
 	Input::Initialize(Window::window);
 

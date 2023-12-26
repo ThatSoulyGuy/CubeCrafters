@@ -12,7 +12,7 @@
 #include "thread/ThreadTaskExecutor.hpp"
 #include "world/Chunk.hpp"
 
-#define VIEW_DISTANCE 1
+#define VIEW_DISTANCE 6
 
 namespace World
 {
