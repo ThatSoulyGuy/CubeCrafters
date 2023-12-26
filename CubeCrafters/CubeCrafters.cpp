@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "core/Logger.hpp"
 #include "core/Window.hpp"
 #include "entity/Player.hpp"
@@ -5,7 +7,7 @@
 
 Player player;
 
-int main()
+int main(int argc, char* argv[])
 {
 	Logger_Init();
 
@@ -16,7 +18,15 @@ int main()
 	TextureManager::RegisterTexture(Texture::Register("textures/block.png", "block"));
 	TextureManager::RegisterTexture(Texture::Register("textures/terrain.png", "atlas"));
 
-	Window::GenerateWindow("CubeCrafters* 0.1.8", { 750, 450 });
+	int scr_width{750};
+	int scr_height{450};
+	if (argc > 1)
+	{
+		assert(argc == 3);
+		scr_width = std::stoi(argv[1]);
+		scr_height = std::stoi(argv[2]);
+	}
+	Window::GenerateWindow("CubeCrafters* 0.1.8", { scr_width, scr_height });
 
 	Input::Initialize(Window::window);
 

@@ -1,1 +1,1 @@
-./build/CubeCrafters.out
+./build/CubeCrafters.out 1200 800
