@@ -60,22 +60,28 @@ namespace Renderer
 
 		for (auto& [key, object] : registeredObjects)
 		{
+			if (!object->active)
+				continue;
+
 			model = glm::mat4(1.0f);
 
-			int count = 0;
-
-			for (auto& [key, texture] : object->textures)
+			if (!object->wireframe)
 			{
-				glActiveTexture(GL_TEXTURE0 + count);
-				glBindTexture(GL_TEXTURE_2D, texture.textureID);
+				int count = 0;
 
-				int error = glGetError();
-				if (error != GL_NO_ERROR)
-					Logger_ThrowError(std::to_string(error), std::format("OpenGL error: {}", error), false);
+				for (auto& [key, texture] : object->textures)
+				{
+					glActiveTexture(GL_TEXTURE0 + count);
+					glBindTexture(GL_TEXTURE_2D, texture.textureID);
 
-				++count;
+					int error = glGetError();
+					if (error != GL_NO_ERROR)
+						Logger_ThrowError(std::to_string(error), std::format("OpenGL error: {}", error), false);
+
+					++count;
+				}
 			}
-
+			
 			eulerAngles = object->transform.rotation;
 			rotationMatrix = glm::eulerAngleYXZ(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 
@@ -84,10 +90,11 @@ namespace Renderer
 			model = glm::translate(model, object->transform.position);
 
 			object->shader->Use();
+			
 			object->shader->SetUniform("model", model);
 			object->shader->SetUniform("view", camera.view);
 			object->shader->SetUniform("projection", camera.projection);
-			
+
 			int error = glGetError();
 			if (error != GL_NO_ERROR)
 				Logger_ThrowError(std::to_string(error), std::format("OpenGL error: {}", error), false);
@@ -98,8 +105,10 @@ namespace Renderer
 			if (error != GL_NO_ERROR)
 				Logger_ThrowError(std::to_string(error), std::format("OpenGL error: {}", error), false);
 
-			if (drawLines)
-				glDrawElements(GL_LINES, object->indices.size(), GL_UNSIGNED_INT, 0);
+			glLineWidth(5.0f);
+
+			if (object->wireframe)
+				glDrawArraysInstanced(GL_LINES, 0, 2, 12);
 			else
 				glDrawElements(GL_TRIANGLES, object->indices.size(), GL_UNSIGNED_INT, 0);
 

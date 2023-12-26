@@ -12,10 +12,11 @@ int main()
 	Window::Initalize();
 
 	ShaderManager::RegisterShader(ShaderObject::Register("shaders/default", "default"));
+	ShaderManager::RegisterShader(ShaderObject::Register("shaders/wireframe", "wireframe"));
 	TextureManager::RegisterTexture(Texture::Register("textures/block.png", "block"));
 	TextureManager::RegisterTexture(Texture::Register("textures/terrain.png", "atlas"));
 
-	Window::GenerateWindow("CubeCrafters* 0.1.7", { 750, 450 });
+	Window::GenerateWindow("CubeCrafters* 0.1.8", { 750, 450 });
 
 	Input::Initialize(Window::window);
 

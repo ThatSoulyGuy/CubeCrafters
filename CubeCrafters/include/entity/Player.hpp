@@ -21,6 +21,11 @@ public:
 		Input::SetCursorMode(false);
 		camera.Initialize(position);
 		transform.position = position;
+
+		wireframeBox = RenderableObject::Register(NameIDTag::Register(wireframeBox.get()), {}, {}, "wireframe");
+		wireframeBox->wireframe = true;
+		wireframeBox->active = false;
+		wireframeBox->Generate();
 	}
 
 	void Update()
@@ -35,9 +40,22 @@ public:
 private:
 
 	glm::vec2 oldMouse, newMouse;
+	std::shared_ptr<RenderableObject> wireframeBox;
 
 	void UpdateControls()
 	{
+		glm::ivec3 wireframeBlockPosition = Raycast::Shoot(camera.transform.position, camera.transform.rotation, 5.0f);
+
+		if (wireframeBlockPosition != glm::ivec3{ -1, -1, -1 })
+		{
+			wireframeBox->active = true;
+			wireframeBox->transform.position = { (float)wireframeBlockPosition.x + 0.5f, (float)wireframeBlockPosition.y + 0.5f, (float)wireframeBlockPosition.z + 0.5f };
+		}
+		else
+			wireframeBox->active = false;
+
+		Renderer::RegisterObject(wireframeBox);
+
 		if (Input::GetMouseButton(0, GLFW_PRESS))
 		{
 			glm::ivec3 blockPosition = Raycast::Shoot(camera.transform.position, camera.transform.rotation, 5.0f);

@@ -101,5 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\cubecrafters\shaders\defaultFragment.glsl" />
+    <None Include="assets\cubecrafters\shaders\wireframeVertex.glsl" />
+    <None Include="assets\cubecrafters\shaders\wireframeFragment.glsl" />
   </ItemGroup>
 </Project>

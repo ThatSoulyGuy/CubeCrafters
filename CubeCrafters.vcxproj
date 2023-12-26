@@ -191,6 +191,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\cubecrafters\shaders\defaultFragment.glsl" />
+    <None Include="assets\cubecrafters\shaders\wireframeFragment.glsl" />
+    <None Include="assets\cubecrafters\shaders\wireframeVertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

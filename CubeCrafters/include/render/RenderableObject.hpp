@@ -49,6 +49,9 @@ public:
 
 	Transform transform = TRANSFORM_DEFAULT;
 
+	bool wireframe = false;
+	bool active = true;
+
 	std::map<std::string, unsigned int> buffers =
 	{
 		{"VAO", 0},
@@ -131,37 +134,48 @@ public:
 	{
 		shader->Generate();
 
-		glGenVertexArrays(1, &buffers["VAO"]);
-		glGenBuffers(1, &buffers["VBO"]);
-		glGenBuffers(1, &buffers["EBO"]);
+		if (!wireframe)
+		{
+			glGenVertexArrays(1, &buffers["VAO"]);
+			glGenBuffers(1, &buffers["VBO"]);
+			glGenBuffers(1, &buffers["EBO"]);
 
-		glBindVertexArray(buffers["VAO"]);
+			glBindVertexArray(buffers["VAO"]);
 
-		glBindBuffer(GL_ARRAY_BUFFER, buffers["VBO"]);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, buffers["VBO"]);
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers["EBO"]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers["EBO"]);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+			glEnableVertexAttribArray(0);
 
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+			glEnableVertexAttribArray(1);
 
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoordinates));
-		glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoordinates));
+			glEnableVertexAttribArray(2);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glBindVertexArray(0);
+			glBindVertexArray(0);
 
-		for (auto& [key, value] : textures)
-			value.Generate();
+			for (auto& [key, value] : textures)
+				value.Generate();
 
-		shader->Use();
-		shader->SetUniform("diffuse", 0);
+			shader->Use();
+			shader->SetUniform("diffuse", 0);
+		}
+		else
+		{
+			glGenVertexArrays(1, &buffers["VAO"]);
 
+			glBindVertexArray(buffers["VAO"]);
+
+			glBindVertexArray(0);
+		}
+		
 		int error = glGetError();
 		if (error != GL_NO_ERROR)
 			Logger_ThrowError(std::to_string(error), std::format("OpenGL error: {}", error), false);
@@ -169,6 +183,9 @@ public:
 
 	void ReGenerate()
 	{
+		if (wireframe)
+			return;
+
 		glGenVertexArrays(1, &buffers["VAO"]);
 		glGenBuffers(1, &buffers["VBO"]);
 		glGenBuffers(1, &buffers["EBO"]);
@@ -176,10 +193,10 @@ public:
 		glBindVertexArray(buffers["VAO"]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, buffers["VBO"]);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers["EBO"]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 		glEnableVertexAttribArray(0);
