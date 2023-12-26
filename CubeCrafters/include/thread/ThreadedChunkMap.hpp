@@ -73,13 +73,15 @@ public:
         });
     }
 
-    std::shared_ptr<Chunk>& GetChunk(const glm::ivec3& key) 
+    std::shared_ptr<Chunk> GetChunk(const glm::ivec3& key) 
     {
         std::lock_guard<std::mutex> guard(mapMutex);
         auto it = loadedChunks.find(key);
 
         if (it != loadedChunks.end()) 
             return it->second;
+
+        return nullptr;
     }
 
 

@@ -3,6 +3,7 @@
 
 #include "core/Input.hpp"	
 #include "math/Camera.hpp"
+#include "math/Raycast.hpp"
 
 class Player
 {
@@ -26,6 +27,7 @@ public:
 	{
 		camera.Update(transform.position, transform.rotation, transform.right);
 
+		UpdateControls();
 		UpdateMouseLook();
 		UpdateMovement();
 	}
@@ -33,6 +35,17 @@ public:
 private:
 
 	glm::vec2 oldMouse, newMouse;
+
+	void UpdateControls()
+	{
+		if (Input::GetMouseButton(0, GLFW_PRESS))
+		{
+			glm::ivec3 blockPosition = Raycast::Shoot(camera.transform.position, camera.transform.rotation, 5.0f);
+
+			if (blockPosition != glm::ivec3{-1, -1, -1})
+				World::SetBlock(blockPosition, BlockType::BLOCK_AIR);
+		}
+	}
 
 	void UpdateMouseLook()
 	{

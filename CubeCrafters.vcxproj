@@ -170,6 +170,7 @@
     <ClInclude Include="CubeCrafters\include\core\Window.hpp" />
     <ClInclude Include="CubeCrafters\include\entity\Player.hpp" />
     <ClInclude Include="CubeCrafters\include\math\Camera.hpp" />
+    <ClInclude Include="CubeCrafters\include\math\Raycast.hpp" />
     <ClInclude Include="CubeCrafters\include\math\Transform.hpp" />
     <ClInclude Include="CubeCrafters\include\math\TransformI.hpp" />
     <ClInclude Include="CubeCrafters\include\record\Hash.hpp" />

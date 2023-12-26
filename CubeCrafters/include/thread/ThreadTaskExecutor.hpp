@@ -17,6 +17,11 @@ public:
 
     }
 
+    ~ThreadTaskExecutor()
+    {
+        Terminate();
+    }
+
     void AddTask(std::function<void()> task)
     {
         {
@@ -51,13 +56,9 @@ private:
             std::function<void()> task;
             {
                 std::unique_lock<std::mutex> lock(mutex);
+                cv.wait(lock, [this] { return stop || !tasks.empty(); });
 
-                cv.wait(lock, [this]
-                {
-                    return stop || !tasks.empty();
-                });
-
-                if (stop && tasks.empty())
+                if (stop)
                     return;
 
                 task = std::move(tasks.front());

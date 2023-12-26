@@ -111,6 +111,20 @@ public:
         });
 	}
 
+    bool HasBlock(const glm::ivec3& position)
+    {
+        if (position.x < 0 || position.x >= CHUNK_SIZE)
+            return false;
+
+        if (position.y < 0 || position.y >= CHUNK_SIZE)
+            return false;
+
+        if (position.z < 0 || position.z >= CHUNK_SIZE)
+            return false;
+
+        return blocks[position.x][position.y][position.z] != (int)BlockType::BLOCK_AIR;
+    }
+
     void SetBlock(const glm::ivec3& position, BlockType type)
     {
         if (position.x < 0 || position.x >= CHUNK_SIZE)
@@ -122,12 +136,15 @@ public:
         if (position.z < 0 || position.z >= CHUNK_SIZE)
             return;
 
+        if (blocks[position.x][position.y][position.z] == (int)type)
+            return;
+
         blocks[position.x][position.y][position.z] = (int)type;
 
         Rebuild();
     }
 
-    glm::ivec3 WorldToBlockCoordinates(const glm::vec3& worldPosition)
+    static glm::ivec3 WorldToBlockCoordinates(const glm::vec3& worldPosition)
     {
         int blockX = (int)floor(worldPosition.x) % CHUNK_SIZE;
         int blockY = (int)floor(worldPosition.y) % CHUNK_SIZE;
@@ -140,7 +157,7 @@ public:
         return { blockX, blockY, blockZ };
     }
 
-    glm::ivec3 WorldToBlockCoordinates(const glm::ivec3& worldPosition)
+    static glm::ivec3 WorldToBlockCoordinates(const glm::ivec3& worldPosition)
     {
         int blockX = (int)floor(worldPosition.x) % CHUNK_SIZE;
         int blockY = (int)floor(worldPosition.y) % CHUNK_SIZE;

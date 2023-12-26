@@ -95,6 +95,9 @@
     <ClInclude Include="CubeCrafters\include\thread\ThreadedChunkMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CubeCrafters\include\math\Raycast.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\cubecrafters\shaders\defaultFragment.glsl" />

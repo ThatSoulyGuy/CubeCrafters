@@ -39,6 +39,38 @@ namespace World
         );
     }
 
+    std::shared_ptr<Chunk> GetChunk(const glm::vec3& worldPosition)
+    {
+        glm::ivec3 position = WorldToChunkCoordinates(worldPosition);
+
+        if (loadedChunks.Contains(position))
+            return loadedChunks.GetChunk(position);
+
+        return nullptr;
+    }
+
+    void SetBlock(const glm::vec3& worldPosition, BlockType type)
+    {
+        glm::ivec3 chunkCoordinates = WorldToChunkCoordinates(worldPosition);
+
+        std::shared_ptr<Chunk> chunk = loadedChunks.GetChunk(chunkCoordinates);
+
+        if (chunk == nullptr && type != BlockType::BLOCK_AIR)
+        {
+            chunk = std::make_shared<Chunk>();
+            chunk->Initialize(chunkCoordinates * CHUNK_SIZE, true);
+
+            loadedChunks.AddChunk(chunkCoordinates, chunk);
+        }
+
+        if (chunk != nullptr)
+        {
+            glm::ivec3 blockPosition = Chunk::WorldToBlockCoordinates(worldPosition);
+
+            chunk->SetBlock(blockPosition, type);
+        }
+    }
+
     void Update()
     {
         glm::ivec3 playerChunkCoordinates = WorldToChunkCoordinates(playerPosition);
