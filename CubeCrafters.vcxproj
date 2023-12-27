@@ -169,6 +169,7 @@
     <ClInclude Include="CubeCrafters\include\core\Settings.hpp" />
     <ClInclude Include="CubeCrafters\include\core\Window.hpp" />
     <ClInclude Include="CubeCrafters\include\entity\Player.hpp" />
+    <ClInclude Include="CubeCrafters\include\math\AABB.hpp" />
     <ClInclude Include="CubeCrafters\include\math\Camera.hpp" />
     <ClInclude Include="CubeCrafters\include\math\Raycast.hpp" />
     <ClInclude Include="CubeCrafters\include\math\Transform.hpp" />

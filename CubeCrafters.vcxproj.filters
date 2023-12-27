@@ -98,6 +98,9 @@
     <ClInclude Include="CubeCrafters\include\math\Raycast.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CubeCrafters\include\math\AABB.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\cubecrafters\shaders\defaultFragment.glsl" />

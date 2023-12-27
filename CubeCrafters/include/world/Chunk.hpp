@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <memory>
+#include "math/AABB.hpp"
 #include "math/TransformI.hpp"
 #include "render/Renderer.hpp"
 #include "world/BlockManager.hpp"
@@ -59,6 +60,7 @@ public:
 
 		vertices.clear();
 		indices.clear();
+        blockAABBs.clear();
 		indicesIndex = 0;
 
 		for (int x = 0; x < CHUNK_SIZE; ++x)
@@ -89,6 +91,17 @@ public:
 
                     if (ShouldRenderFace(x, y, z, "left"))
                         GenerateLeftFace({x, y, z}, BlockManager::GetTextureCoordinates(textureCoordinates[5]));
+
+                    if (!blockAABBs.contains({ x, y, z }) && BlockExposed({ x, y, z }))
+                    {
+                        glm::ivec3 blockPosition = { x, y, z };
+
+                        AABB blockAABB = GenerateBlockAABB(blockPosition);
+
+                        blockAABBs.insert({ blockPosition, blockAABB });
+                    }
+                    else
+                        blockAABBs.erase({ x, y, z });
 				}
 			}
 		}
@@ -110,6 +123,14 @@ public:
             Renderer::RegisterObject(mesh);
         });
 	}
+
+    bool IsAir(const glm::ivec3& position)
+    {
+        if (IsPositionInsideChunk(position))
+            return blocks[position.x][position.y][position.z] == (int)BlockType::BLOCK_AIR;
+        else
+            return true;
+    }
 
     bool HasBlock(const glm::ivec3& position)
     {
@@ -170,6 +191,27 @@ public:
         return { blockX, blockY, blockZ };
     }
 
+    glm::vec3 LocalToWorldCoordinates(glm::ivec3 localPosition)
+    {
+        return
+        {
+            transform.position.x * CHUNK_SIZE + localPosition.x,
+            transform.position.y * CHUNK_SIZE + localPosition.y,
+            transform.position.z * CHUNK_SIZE + localPosition.z
+        };
+    }
+
+    static glm::ivec3 WorldToLocalCoordinates(const glm::vec3& worldPosition)
+    {
+        return 
+        {
+            (int)floor(worldPosition.x) % CHUNK_SIZE,
+            (int)floor(worldPosition.y) % CHUNK_SIZE,
+            (int)floor(worldPosition.z) % CHUNK_SIZE
+        };
+    }
+
+
     void CleanUp() const
     {
         Renderer::RemoveObject(mesh->name);
@@ -177,6 +219,7 @@ public:
 
 	TransformI transform;
 	std::shared_ptr<RenderableObject> mesh;
+    std::unordered_map<glm::ivec3, AABB> blockAABBs;
 
 private:
 
@@ -188,6 +231,28 @@ private:
 	bool firstRebuild = true;
 
 	unsigned int blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+
+    AABB GenerateBlockAABB(const glm::ivec3& blockPosition)
+    {
+        glm::vec3 worldPosition = { blockPosition.x + transform.position.x + 0.5f, blockPosition.y + transform.position.y + 0.5f, blockPosition.z + transform.position.z + 0.5f };
+        glm::vec3 blockDimensions = { 1.0f, 1.0f, 1.0f };
+
+        return AABB::Register(worldPosition, blockDimensions);
+    }
+
+    bool BlockExposed(const glm::ivec3& position)
+    {
+        return IsAir({ position.x - 1, position.y, position.z }) || IsAir({ position.x + 1, position.y, position.z }) ||
+               IsAir({ position.x, position.y - 1, position.z }) || IsAir({ position.x, position.y + 1, position.z }) ||
+               IsAir({ position.x, position.y, position.z - 1 }) || IsAir({ position.x, position.y, position.z + 1 });
+    }
+
+    bool IsPositionInsideChunk(const glm::ivec3& position)
+    {
+        return position.x >= 0 && position.x < CHUNK_SIZE &&
+            position.y >= 0 && position.y < CHUNK_SIZE &&
+            position.z >= 0 && position.z < CHUNK_SIZE;
+    }
 
     bool ShouldRenderFace(int x, int y, int z, const std::string& face)
     {

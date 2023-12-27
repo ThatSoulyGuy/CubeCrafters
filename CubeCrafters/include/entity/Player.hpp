@@ -1,6 +1,7 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+#include <memory>
 #include "core/Input.hpp"	
 #include "math/Camera.hpp"
 #include "math/Raycast.hpp"
@@ -12,6 +13,7 @@ public:
 	
 	Camera camera = {};
 	Transform transform = TRANSFORM_DEFAULT;
+	AABB boundingBox;
 
 	float mouseSensitivity = 0.08f;
 	float moveSpeed = 0.1f;
@@ -26,6 +28,8 @@ public:
 		wireframeBox->wireframe = true;
 		wireframeBox->active = false;
 		wireframeBox->Generate();
+
+		boundingBox = AABB::Register({ 0.4f, 1.89f, 0.4f });
 	}
 
 	void Update()
@@ -35,6 +39,8 @@ public:
 		UpdateControls();
 		UpdateMouseLook();
 		UpdateMovement();
+
+		boundingBox.Update(transform.position);
 	}
 
 private:
@@ -112,17 +118,76 @@ private:
 
 	void UpdateMovement()
 	{
+		glm::vec3 proposedPosition = transform.position;
+
 		if (Input::GetKey(GLFW_KEY_W, GLFW_PRESS))
-			transform.position += moveSpeed * transform.rotation;
+			proposedPosition += moveSpeed * transform.rotation;
 
 		if (Input::GetKey(GLFW_KEY_S, GLFW_PRESS))
-			transform.position -= moveSpeed * transform.rotation;
+			proposedPosition -= moveSpeed * transform.rotation;
 
 		if (Input::GetKey(GLFW_KEY_A, GLFW_PRESS))
-			transform.position += moveSpeed * transform.right;
+			proposedPosition += moveSpeed * transform.right;
 
 		if (Input::GetKey(GLFW_KEY_D, GLFW_PRESS))
-			transform.position -= moveSpeed * transform.right;
+			proposedPosition -= moveSpeed * transform.right;
+
+		glm::ivec3 currentChunk = World::WorldToChunkCoordinates(transform.position);
+		auto chunk = World::GetChunk(currentChunk);
+
+		AABB proposedAABB = boundingBox;
+		proposedAABB.Update(proposedPosition);
+
+		std::vector<AABB> nearbyAABBs;
+		glm::ivec3 playerBlockPosition = Chunk::WorldToBlockCoordinates(transform.position);
+
+		if (chunk != nullptr)
+		{
+			for (auto& blockAABB : chunk->blockAABBs)
+			{
+				if (IsWithinRadius(playerBlockPosition, blockAABB.first, 2))
+					nearbyAABBs.push_back(blockAABB.second);
+			}
+		}
+		
+		for (auto& block : nearbyAABBs)
+		{
+			if (boundingBox.IsColliding(block))
+			{
+				glm::vec3 overlap = CalculateCollisionOverlap(proposedAABB, block);
+				proposedPosition -= overlap;
+				proposedPosition = transform.position;
+				break;
+			}
+	}
+
+		transform.position = proposedPosition;
+	}
+
+	glm::vec3 CalculateCollisionOverlap(const AABB& a, const AABB& b)
+	{
+		glm::vec3 overlap;
+
+		float overlapX = std::min(a.max.x, b.max.x) - std::max(a.min.x, b.min.x);
+		float overlapY = std::min(a.max.y, b.max.y) - std::max(a.min.y, b.min.y);
+		float overlapZ = std::min(a.max.z, b.max.z) - std::max(a.min.z, b.min.z);
+
+		if (overlapX < overlapY && overlapX < overlapZ) 
+			overlap.x = overlapX;
+		else if (overlapY < overlapZ) 
+			overlap.y = overlapY;
+		else 
+			overlap.z = overlapZ;
+
+		return overlap;
+	}
+
+	static bool IsWithinRadius(const glm::ivec3& center, const glm::ivec3& point, int radius)
+	{
+		int dx = center.x - point.x;
+		int dy = center.y - point.y;
+		int dz = center.z - point.z;
+		return (dx * dx + dy * dy + dz * dz) <= radius * radius;
 	}
 };
 
